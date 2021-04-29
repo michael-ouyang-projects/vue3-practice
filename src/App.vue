@@ -1,34 +1,35 @@
 <template>
   <Menu :changeShowingType="changeShowingType"></Menu>
-  <Practice v-if="showPractice"></Practice>
-  <Product title="THIS IS TITLE" v-if="showProduct"></Product>
-  <Footer footerText="== FOOTER =="></Footer>
+  <Product v-if="showProduct"></Product>
+  <Practice v-if="showPractice" directlyTitle="THIS IS TITLE"></Practice>
+  <Footer footerString="== FOOTER =="></Footer>
 </template>
 
 <script>
-import Menu from './components/product/Menu.vue'
-import Practice from './components/practice/Practice.vue'
-import Product from './components/product/Product.vue'
-import Footer from './components/product/Footer.vue'
+import { ref } from 'vue'
+import Menu from './components/Menu.vue'
+import Product from './components/Product.vue'
+import Practice from './components/Practice.vue'
+import Footer from './components/Footer.vue'
 
 export default {
-  name: 'App',
   components: {
     Menu,
-    Practice,
     Product,
+    Practice,
     Footer
   },
-  data() {
-    return {
-      showPractice: true,
-      showProduct: false
+  setup() {
+    const showProduct = ref(false)
+    const showPractice = ref(true)
+    const changeShowingType = () => {
+      showProduct.value = !showProduct.value
+      showPractice.value = !showPractice.value
     }
-  },
-  methods: {
-    changeShowingType() {
-      this.showPractice = !this.showPractice
-      this.showProduct = !this.showProduct
+    return {
+      showProduct,
+      showPractice,
+      changeShowingType
     }
   }
 }
