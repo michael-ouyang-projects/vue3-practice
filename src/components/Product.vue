@@ -1,11 +1,14 @@
 <template>
-  <div id="app" v-for="(culture) in cultures" v-bind:key="culture">
-    <Card :value='culture.showingText' @click="toggleShowingCardText(culture)" :changeCardShowingStatus="changeCardShowingStatus"></Card>
+  Time: {{ counter }}
+  <div id="card">
+    <div v-for="card in cards" v-bind:key="card">
+      <Card :value='card.showingText' @click="filpCard(card)"></Card>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Card from './Card.vue'
 
 export default {
@@ -16,67 +19,69 @@ export default {
     changeShowingType: null,
   },
   setup () {
-    const showCard = ref(true)
-    const changeCardShowingStatus = () => {
-      
-    }
-    const openingCards = ref(null)
-    const toggleShowingCardText = (culture) => {
-      if(culture.showingText == 'BACK') {
-        if(openingCards.value == null) {
-          openingCards.value = culture
-          culture.showingText = culture.data
+    const counter = ref(0)
+    onMounted(() => {
+      setInterval(() => {
+        counter.value++
+      }, 1000)
+    })
+
+    const currentlyOpeningCards = ref(null)
+    const filpCard = (card) => {
+      if(card.showingText == 'BACK') {
+        if(currentlyOpeningCards.value == null) {
+          card.showingText = card.culture
+          currentlyOpeningCards.value = card
         } else {
-          if(openingCards.value.data == culture.data) {
-            culture.showingText = culture.data
-            openingCards.value = null
+          if(currentlyOpeningCards.value.culture == card.culture) {
+            card.showingText = card.culture
+            currentlyOpeningCards.value = null
           } else {
-            culture.showingText = culture.data
-            setTimeout(() => culture.showingText = 'BACK', 2000);
-            setTimeout(() => {openingCards.value.showingText = 'BACK'; 
-                              openingCards.value = null}, 2000);
+            card.showingText = card.culture
+            setTimeout(() => card.showingText = 'BACK', 2000);
+            setTimeout(() => {currentlyOpeningCards.value.showingText = 'BACK'
+                              currentlyOpeningCards.value = null}, 2000);
           }
         }
       }
     }
-    const cultures = ref([
-      { showingText: 'BACK', data: '實在' },
-      { showingText: 'BACK', data: '實力' },
-      { showingText: 'BACK', data: '責任' },
-      { showingText: 'BACK', data: '團隊' },
-      { showingText: 'BACK', data: '和諧' },
-      { showingText: 'BACK', data: '快樂' },
-      { showingText: 'BACK', data: '領先' },
-      { showingText: 'BACK', data: '卓越' },
-      { showingText: 'BACK', data: '榮譽' },
-      { showingText: 'BACK', data: '知福' },
-      { showingText: 'BACK', data: '惜緣' },
-      { showingText: 'BACK', data: '感恩' },
-      { showingText: 'BACK', data: '實在' },
-      { showingText: 'BACK', data: '實力' },
-      { showingText: 'BACK', data: '責任' },
-      { showingText: 'BACK', data: '團隊' },
-      { showingText: 'BACK', data: '和諧' },
-      { showingText: 'BACK', data: '快樂' },
-      { showingText: 'BACK', data: '領先' },
-      { showingText: 'BACK', data: '卓越' },
-      { showingText: 'BACK', data: '榮譽' },
-      { showingText: 'BACK', data: '知福' },
-      { showingText: 'BACK', data: '惜緣' },
-      { showingText: 'BACK', data: '感恩' },
+    const cards = ref([
+      { showingText: 'BACK', culture: '實在' },
+      { showingText: 'BACK', culture: '實力' },
+      { showingText: 'BACK', culture: '責任' },
+      { showingText: 'BACK', culture: '團隊' },
+      { showingText: 'BACK', culture: '和諧' },
+      { showingText: 'BACK', culture: '快樂' },
+      { showingText: 'BACK', culture: '領先' },
+      { showingText: 'BACK', culture: '卓越' },
+      { showingText: 'BACK', culture: '榮譽' },
+      { showingText: 'BACK', culture: '知福' },
+      { showingText: 'BACK', culture: '惜緣' },
+      { showingText: 'BACK', culture: '感恩' },
+      { showingText: 'BACK', culture: '實在' },
+      { showingText: 'BACK', culture: '實力' },
+      { showingText: 'BACK', culture: '責任' },
+      { showingText: 'BACK', culture: '團隊' },
+      { showingText: 'BACK', culture: '和諧' },
+      { showingText: 'BACK', culture: '快樂' },
+      { showingText: 'BACK', culture: '領先' },
+      { showingText: 'BACK', culture: '卓越' },
+      { showingText: 'BACK', culture: '榮譽' },
+      { showingText: 'BACK', culture: '知福' },
+      { showingText: 'BACK', culture: '惜緣' },
+      { showingText: 'BACK', culture: '感恩' },
     ])
     return {
-      showCard,
-      changeCardShowingStatus,
-      toggleShowingCardText,
-      cultures
+      counter,
+      filpCard,
+      cards
     }
   }
 }
 </script>
 
-<style>
-#app1 {
+<style scoped>
+#card {
   display: grid;
   grid-template-columns: repeat(6, 4fr);
 }

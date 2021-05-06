@@ -1,12 +1,9 @@
 <template>
   <hr/>
-  {{ footerString }}
+  == FOOTER ==
 </template>
 
 <script>
 export default {
-  props: {
-    footerString: String
-  }
 }
 </script>

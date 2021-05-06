@@ -1,50 +1,41 @@
 <template>
-  <!-- Declarative Rendering -->
-  {{ directlyTitle }}<br/><br/>
+  <!-- Reactive Data -->
+  {{ title }}<br/><br/>
   {{ refTitle }}<br/><br/>
-  <input v-model="refTitle" />
+  <input v-model="refTitle" /><br/><br/>
 
-  Counter: {{ counter - 1000 }}
+  Counter: {{ counter }}
 
   <div :title="hoverMessage">
     <br/>
     Hover your mouse over me for a few seconds to see my dynamically bound title!
   </div>
 
-  <!-- Handling User Input -->
-  <p>{{ reverseMessage }}</p>
-  <button @click="reverseMessageMethod">Reverse Message</button>
-
-  <p>{{ bindingMessage }}</p>
-  <input v-model="bindingMessage" />
+  <!-- Events -->
+  <p>{{ message }}</p>
+  <button @click="reverseMessage">Reverse Message</button><br/><br/><br/>
 
   <!-- Conditionals and Loops -->
-  <div id="conditional-rendering">
-    <br/>
-    <span v-if="seen">See me</span>&nbsp;
-    <button @click="toggle">Toggle</button>
-  </div>
+  <span v-if="seen">See me (v-if)</span>&nbsp;
+  <span v-show="seen">See me (v-show)</span>&nbsp;
+  <button @click="toggle">Toggle</button><br/><br/>
 
-  <div>
-    <ul>
-      <li v-for="todo in todos" v-bind:key="todo">
-        {{ todo.text }}
-      </li>
-    </ul>
-  </div>
+  <ul>
+    <li v-for="todo in todos" :key="todo">
+      {{ todo.text }}
+    </li>
+  </ul>
 </template>
 
 <script>
-import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export default {
   props: {
-    directlyTitle: String
+    title: String
   },
   setup(props) {
-    const refTitle = ref(props.directlyTitle)
-    const nonRefTitle = refTitle
+    const refTitle = ref(props.title + ' (reactive)') 
 
     const counter = ref(0)
     onMounted(() => {
@@ -55,12 +46,10 @@ export default {
 
     const hoverMessage = ref('You loaded this page on ' + new Date().toLocaleString())
     
-    const reverseMessage = ref('Hello Vue.js!')
-    const reverseMessageMethod = () => {
-      reverseMessage.value = reverseMessage.value.split('').reverse().join('')
+    const message = ref('Hello Vue.js!')
+    const reverseMessage = () => {
+      message.value = message.value.split('').reverse().join('')
     }
-
-    const bindingMessage = ref('Type Something...')
     
     const seen = ref(true)
     const toggle = () => {
@@ -75,12 +64,10 @@ export default {
 
     return {
       refTitle,
-      nonRefTitle,
       counter,
       hoverMessage,
+      message,
       reverseMessage,
-      reverseMessageMethod,
-      bindingMessage,
       seen,
       toggle,
       todos

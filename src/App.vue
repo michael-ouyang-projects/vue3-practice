@@ -1,8 +1,8 @@
 <template>
   <Menu :changeShowingType="changeShowingType"></Menu>
   <Product v-if="showProduct"></Product>
-  <Practice v-if="showPractice" directlyTitle="THIS IS TITLE"></Practice>
-  <Footer footerString="== FOOTER =="></Footer>
+  <Practice v-if="showPractice" title="THIS IS TITLE"></Practice>
+  <Footer></Footer>
 </template>
 
 <script>
@@ -20,11 +20,16 @@ export default {
     Footer
   },
   setup() {
-    const showProduct = ref(false)
-    const showPractice = ref(true)
-    const changeShowingType = () => {
-      showProduct.value = !showProduct.value
-      showPractice.value = !showPractice.value
+    const showProduct = ref(true)
+    const showPractice = ref(false)
+    const changeShowingType = type => {
+      if (type == 'Product') {
+        showProduct.value = true
+        showPractice.value = false
+      } else if (type == 'Practice') {
+        showProduct.value = false
+        showPractice.value = true
+      }
     }
     return {
       showProduct,
@@ -37,11 +42,8 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Courier New';
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: black
 }
 </style>
