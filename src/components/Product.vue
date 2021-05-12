@@ -1,5 +1,9 @@
 <template>
-  Time: {{ counter }}
+  <div v-show="showStartGameBlock"><br/>
+    Point to Win: <input v-model="pointToWin" />&nbsp;
+    <button @click="startGame">Start Game</button><br/><br/>
+  </div>
+  Time: {{ counter }}, Point: {{ point }} / {{ pointToWin }}
   <div id="card">
     <div v-for="card in cards" v-bind:key="card">
       <Card :value='card.showingText' @click="filpCard(card)"></Card>
@@ -8,75 +12,86 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import Card from './Card.vue'
 
 export default {
   components: {
     Card
   },
-  props: {
-    changeShowingType: null,
-  },
   setup () {
+    const showStartGameBlock = ref(true)
     const counter = ref(0)
-    onMounted(() => {
-      setInterval(() => {
-        counter.value++
-      }, 1000)
-    })
+    const cards = ref([])
+    const datas = ref(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'])
+    var startCountingTime
+    const startGame = () => {
+      showStartGameBlock.value = false
+      for(var i = 0; i < pointToWin.value; i++) {
+        cards.value.push({ showingText: 'BACK', data: datas.value[i] })
+        cards.value.push({ showingText: 'BACK', data: datas.value[i] })
+      }
+      shuffle(cards.value)
+      startCountingTime = setInterval(() => {counter.value++}, 1000)
+    }
 
-    const currentlyOpeningCards = ref(null)
+    const point = ref(0)
+    const pointToWin = ref(0)
+    const canFlip = ref(true)
+    const currentlyOpeningCard = ref(null)
     const filpCard = (card) => {
-      if(card.showingText == 'BACK') {
-        if(currentlyOpeningCards.value == null) {
-          card.showingText = card.culture
-          currentlyOpeningCards.value = card
+      if(card.showingText == 'BACK' && canFlip.value) {
+        if(currentlyOpeningCard.value == null) {
+          card.showingText = card.data
+          currentlyOpeningCard.value = card
         } else {
-          if(currentlyOpeningCards.value.culture == card.culture) {
-            card.showingText = card.culture
-            currentlyOpeningCards.value = null
+          if(currentlyOpeningCard.value.data == card.data) {
+            card.showingText = card.data
+            currentlyOpeningCard.value = null
+            if(++point.value == pointToWin.value) {
+              setTimeout(() => {
+                alert('Time to Win: ' + counter.value + ' seconds')
+                cards.value = []
+                showStartGameBlock.value = true
+                clearInterval(startCountingTime)
+                counter.value = 0
+                point.value = 0}, 10);
+            }
           } else {
-            card.showingText = card.culture
+            canFlip.value = false;
+            card.showingText = card.data
             setTimeout(() => card.showingText = 'BACK', 2000);
-            setTimeout(() => {currentlyOpeningCards.value.showingText = 'BACK'
-                              currentlyOpeningCards.value = null}, 2000);
+            setTimeout(() => {currentlyOpeningCard.value.showingText = 'BACK'
+                              currentlyOpeningCard.value = null
+                              canFlip.value = true}, 2000);
           }
         }
       }
     }
-    const cards = ref([
-      { showingText: 'BACK', culture: '實在' },
-      { showingText: 'BACK', culture: '實力' },
-      { showingText: 'BACK', culture: '責任' },
-      { showingText: 'BACK', culture: '團隊' },
-      { showingText: 'BACK', culture: '和諧' },
-      { showingText: 'BACK', culture: '快樂' },
-      { showingText: 'BACK', culture: '領先' },
-      { showingText: 'BACK', culture: '卓越' },
-      { showingText: 'BACK', culture: '榮譽' },
-      { showingText: 'BACK', culture: '知福' },
-      { showingText: 'BACK', culture: '惜緣' },
-      { showingText: 'BACK', culture: '感恩' },
-      { showingText: 'BACK', culture: '實在' },
-      { showingText: 'BACK', culture: '實力' },
-      { showingText: 'BACK', culture: '責任' },
-      { showingText: 'BACK', culture: '團隊' },
-      { showingText: 'BACK', culture: '和諧' },
-      { showingText: 'BACK', culture: '快樂' },
-      { showingText: 'BACK', culture: '領先' },
-      { showingText: 'BACK', culture: '卓越' },
-      { showingText: 'BACK', culture: '榮譽' },
-      { showingText: 'BACK', culture: '知福' },
-      { showingText: 'BACK', culture: '惜緣' },
-      { showingText: 'BACK', culture: '感恩' },
-    ])
     return {
       counter,
+      startGame,
+      showStartGameBlock,
+      point,
+      pointToWin,
+      cards,
       filpCard,
-      cards
     }
   }
+}
+
+function shuffle(array) {
+  var currentIndex = array.length;
+  var randomIndex;
+  var temporaryValue;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
 }
 </script>
 

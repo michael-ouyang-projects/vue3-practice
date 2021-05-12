@@ -1,8 +1,8 @@
 <template>
-  <Menu :changeShowingType="changeShowingType"></Menu>
-  <Product v-if="showProduct"></Product>
-  <Practice v-if="showPractice" title="THIS IS TITLE"></Practice>
-  <Footer></Footer>
+  <Menu :changeShowingType="changeShowingType" />
+  <Product v-if="showProduct" />
+  <Practice v-if="showPractice" title="THIS IS TITLE" />
+  <Footer />
 </template>
 
 <script>

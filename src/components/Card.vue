@@ -1,28 +1,19 @@
 <template>
   <div>
-    <button @click="handleClicked">{{ value }}</button>
+    <button>{{ value }}</button>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    value: String,
-    changeCardShowingStatus: null
-  }, 
-  setup (props) {
-    const handleClicked = () => {
-      props.changeCardShowingStatus()
-    }
-    return {
-      handleClicked
-    }
+    value: String
   }
 }
 </script>
 
-<style>
+<style scoped>
 div {
-  padding: 10px
+  padding: 30px
 }
 </style>
