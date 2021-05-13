@@ -5,7 +5,7 @@
   </div>
   Time: {{ counter }}, Point: {{ point }} / {{ pointToWin }}
   <div id="card">
-    <div v-for="card in cards" v-bind:key="card">
+    <div v-for="card in cards" :key="card">
       <Card :value='card.showingText' @click="filpCard(card)"></Card>
     </div>
   </div>

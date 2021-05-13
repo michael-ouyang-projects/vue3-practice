@@ -1,6 +1,5 @@
 <template>
   <!-- Reactive Data -->
-  {{ title }}<br/><br/>
   {{ refTitle }}<br/><br/>
   <input v-model="refTitle" /><br/><br/>
 
@@ -31,11 +30,8 @@
 import { ref, onMounted } from 'vue'
 
 export default {
-  props: {
-    title: String
-  },
-  setup(props) {
-    const refTitle = ref(props.title + ' (reactive)') 
+  setup() {
+    const refTitle = ref('refTitle') 
 
     const counter = ref(0)
     onMounted(() => {
