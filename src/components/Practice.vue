@@ -1,4 +1,7 @@
 <template>
+  Member : {{ member }}
+  <button @click="testApiCall">testApiCall</button><br/><br/><br/>
+
   <!-- Reactive Data -->
   {{ refTitle }}<br/><br/>
   <input v-model="refTitle" /><br/><br/>
@@ -31,6 +34,14 @@ import { ref, onMounted } from 'vue'
 
 export default {
   setup() {
+    const axios = require('axios')
+    const member = ref(null)
+    const testApiCall = () => {
+      axios.get('http://localhost:8000/test').then(response => {
+        member.value = response.data;
+      });
+    }
+
     const refTitle = ref('refTitle') 
 
     const counter = ref(0)
@@ -59,6 +70,8 @@ export default {
     ])
 
     return {
+      member,
+      testApiCall,
       refTitle,
       counter,
       hoverMessage,
