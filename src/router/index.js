@@ -4,12 +4,12 @@ import Practice from '../components/Practice.vue'
 
 const routes = [
   {
-    path: "/",
+    path: "/product",
     name: "Product",
     component: Product,
   },
   {
-    path: "/practice",
+    path: "/",
     name: "Practice",
     component: Practice,
   },
