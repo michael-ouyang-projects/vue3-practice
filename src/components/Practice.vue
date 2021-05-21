@@ -30,11 +30,11 @@
 </template>
 
 <script>
+import axios from "axios"
 import { ref, onMounted } from 'vue'
 
 export default {
   setup() {
-    const axios = require('axios')
     const member = ref(null)
     const testApiCall = () => {
       axios.get('http://localhost:8000/test').then(response => {
