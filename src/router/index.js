@@ -1,17 +1,20 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Product from '../components/Product.vue'
-import Practice from '../components/Practice.vue'
+import User from '@/components/User.vue'
+import Practice from '@/components/Practice.vue'
+import Game from '@/components/Game.vue'
 
 const routes = [
   {
-    path: "/product",
-    name: "Product",
-    component: Product,
+    path: "/",
+    component: User,
   },
   {
-    path: "/",
-    name: "Practice",
+    path: "/practice",
     component: Practice,
+  },
+  {
+    path: "/game",
+    component: Game,
   },
 ];
 

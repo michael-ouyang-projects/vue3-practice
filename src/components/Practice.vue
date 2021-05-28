@@ -1,85 +1,113 @@
 <template>
-  Member : {{ member }}
-  <button @click="testApiCall">testApiCall</button><br/><br/><br/>
+  <!-- reactive rendering -->
+  Counter: {{ counter }}<br/><br/><br/>
 
-  <!-- Reactive Data -->
-  {{ refTitle }}<br/><br/>
-  <input v-model="refTitle" /><br/><br/>
+  <!-- two-way binding -->
+  {{ title }}<br/><br/>
+  <input v-model="title" /><br/><br/>
 
-  Counter: {{ counter }}
+  <!-- reactive rendering on properties & events handling -->
+  <p :style='colorStyle'>{{ message }}</p>
+  <button @click="eventsHandling">Events Handling</button><br/><br/><br/>
 
-  <div :title="hoverMessage">
-    <br/>
-    Hover your mouse over me for a few seconds to see my dynamically bound title!
-  </div>
+  <!-- showing state -->
+  <span v-if="seen">v-if</span>&nbsp;/
+  <span v-show="seen">v-show</span>&nbsp;<br/><br/>
+  <button @click="toggleSeen">ToggleSeen</button><br/><br/><br/>
 
-  <!-- Events -->
-  <p>{{ message }}</p>
-  <button @click="reverseMessage">Reverse Message</button><br/><br/><br/>
+  <!-- loops -->
+  <div v-for="name in names" :key="name">
+    {{ name.text }}
+  </div><br/><br/>
 
-  <!-- Conditionals and Loops -->
-  <span v-if="seen">See me (v-if)</span>&nbsp;
-  <span v-show="seen">See me (v-show)</span>&nbsp;
-  <button @click="toggle">Toggle</button><br/><br/>
+  <!-- calling api -->  
+  User : {{ user }}<br/><br/>
+  <button @click="callApi">Call Api</button><br/><br/><br/>
 
-  <ul>
-    <li v-for="todo in todos" :key="todo">
-      {{ todo.text }}
-    </li>
-  </ul>
+  <!-- computed & watchEffect -->
+  <span :style='colorStyle'>User Name: {{ userName }}</span><br/><br/>
+  <input v-model="firstName" /><br/><br/>
+  <input v-model="lastName" /><br/><br/><br/>
 </template>
 
 <script>
-import axios from "axios"
-import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { ref, onMounted, computed, watchEffect } from 'vue'
 
 export default {
   setup() {
-    const member = ref(null)
-    const testApiCall = () => {
-      axios.get('http://localhost:8000/test').then(response => {
-        member.value = response.data;
-      });
-    }
-
-    const refTitle = ref('refTitle') 
-
+    // reactive rendering
     const counter = ref(0)
     onMounted(() => {
       setInterval(() => {
-        counter.value++
+        counter.value++;
       }, 1000)
     })
 
-    const hoverMessage = ref('You loaded this page on ' + new Date().toLocaleString())
-    
-    const message = ref('Hello Vue.js!')
-    const reverseMessage = () => {
-      message.value = message.value.split('').reverse().join('')
+    // two-way binding
+    const title = ref('two-way binding') 
+
+    // events handling & reactive rendering on properties
+    const message = ref('message')
+    const colorStyle = ref('color:black')
+    const eventsHandling = () => {
+      if(colorStyle.value === 'color:black') {
+        colorStyle.value = 'color:red';
+      } else {
+        colorStyle.value = 'color:black';
+      }
     }
     
+    // showing state
     const seen = ref(true)
-    const toggle = () => {
+    const toggleSeen = () => {
       seen.value = !seen.value
     }
 
-    const todos = ref([
+    // loops
+    const names = ref([
         { text: 'Amy' },
         { text: 'Bob' },
         { text: 'Cathay' }
     ])
 
+    // calling api
+    const user = ref(null)
+    const callApi = () => {
+      let url = 'https://jsonplaceholder.typicode.com/users/' + (Math.floor(Math.random() * 10) + 1);
+      axios.get(url).then(response => {
+        user.value = response.data;
+      });
+    }
+
+    // computed & watchEffect
+    const firstName = ref('')
+    const lastName = ref('')
+    const userName = computed(() => {
+      // console.log('in computed()');
+      return firstName.value + ' ' + lastName.value;
+    });
+    watchEffect(() => {
+      // console.log('in watchEffect()');
+      if(userName.value === 'test test') {
+        colorStyle.value = 'color:red';
+      }
+    });
+
     return {
-      member,
-      testApiCall,
-      refTitle,
       counter,
-      hoverMessage,
+      title,
       message,
-      reverseMessage,
+      colorStyle,
+      eventsHandling,
       seen,
-      toggle,
-      todos
+      toggleSeen,
+      names,
+      user,
+      callApi,
+      firstName,
+      lastName,
+      userName
     }
   }
 }

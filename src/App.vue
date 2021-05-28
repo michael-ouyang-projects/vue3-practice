@@ -1,28 +1,22 @@
 <template>
-  <div id="nav"><br/>
-      <router-link to="/">Product</router-link> |
-      <router-link to="/practice">Practice</router-link>
+  <div id="nav">
+    <router-link to="/">Users</router-link> &nbsp;|&nbsp;
+    <router-link to="/practice">Basic Practice</router-link> &nbsp;|&nbsp;
+    <router-link to="/game">Game</router-link>
   </div><br/>
   <router-view />
-  <Footer />
 </template>
 
 <script>
-import Footer from './components/Footer.vue'
-
 export default {
-  components: {
-    Footer
-  },
-  setup() {
-  }
+  name: 'App'
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Courier New';
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
-  color: black
+  margin-top: 30px;
 }
 </style>
