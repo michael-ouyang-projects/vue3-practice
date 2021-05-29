@@ -1,6 +1,6 @@
 <template>
   <table v-show="showUserTable">
-    <tr>
+    <tr v-show="showSortingRow">
       <th>
         <button @click="sortIdAscending()">Asc</button>&nbsp;
         <button @click="sortIdDescending()">Desc</button>
@@ -17,40 +17,66 @@
         <button @click="sortEmailAscending()">Asc</button>&nbsp;
         <button @click="sortEmailDescending()">Desc</button>
       </th>
+      <th></th>
     </tr>
     <tr>
       <th>User ID</th>
       <th>Name</th>
       <th>Phone</th>
       <th>Email</th>
+      <th></th>
     </tr>
-    <tr v-for="user in users" :key="user">
+    <tr v-for="user in users" :key="user" v-show="user.show === true">
       <td><button @click="getUserTodoList(user.id)">{{ user.id }}</button></td>
       <td>{{ user.name }}</td>
       <td>{{ user.phone }}</td>
       <td>{{ user.email }}</td>
+      <td><button>edit</button></td>
     </tr>
   </table><br/>
 
-  <Todo />
+  <TodoTable v-if="showTodoTable" :todoList='userTodoList' @closeTodoTable="closeTodoTable()"/>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
-import Todo from './Todo.vue'
+import { ref, onMounted } from 'vue'
+import TodoTable from './TodoTable.vue'
 import userService from '@/api/user-service.js'
 
 export default {
   components: {
-    Todo
+    TodoTable
   },
   setup() {
+    const showSortingRow = ref(true);
     const users = ref(null);
     const showUserTable = ref(false);
     onMounted(async () => {
       users.value = await userService.getUsers();
+      users.value.forEach(user => {
+        user.show = true;
+      });
       showUserTable.value = true;
     });
+
+    const userTodoList = ref(null);
+    const showTodoTable = ref(false);
+    const closeTodoTable = () => {
+      users.value.forEach(user => {
+        user.show = true;
+      });
+      showSortingRow.value = true;
+      showTodoTable.value = false;
+    };
+    const getUserTodoList = async userId => {
+      userTodoList.value = await userService.getUserTodoList(userId);
+      users.value.forEach(user => {
+        if(userId !== user.id)
+        user.show = false;
+      });
+      showSortingRow.value = false;
+      showTodoTable.value = true;
+    };
 
     const sortIdAscending  = () => {
       users.value.sort((a, b) => {
@@ -97,8 +123,13 @@ export default {
     };
 
     return {
+      showSortingRow,
       users,
       showUserTable,
+      userTodoList,
+      showTodoTable,
+      closeTodoTable,
+      getUserTodoList,
       sortIdAscending,
       sortIdDescending,
       sortNameAscending,
