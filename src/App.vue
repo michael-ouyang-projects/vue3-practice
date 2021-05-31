@@ -1,8 +1,8 @@
 <template>
   <div id="nav">
-    <router-link to="/">Users</router-link> &nbsp;|&nbsp;
-    <router-link to="/practice">Basic Practice</router-link> &nbsp;|&nbsp;
-    <router-link to="/game">Game</router-link>
+    <router-link to="/">Customer</router-link> &nbsp;|&nbsp;
+    <router-link to="/card-game">Card Game</router-link> &nbsp;|&nbsp;
+    <router-link to="/practice">Practice</router-link>
   </div><br/>
   <router-view />
 </template>

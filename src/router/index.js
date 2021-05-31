@@ -1,21 +1,21 @@
 import { createWebHistory, createRouter } from "vue-router";
-import User from '@/components/User.vue'
-import Practice from '@/components/Practice.vue'
-import Game from '@/components/Game.vue'
+import CustomersData from '@/components/customer/CustomersData.vue'
+import CardGame from '@/components/card-game/CardGame.vue'
+import Practice from '@/components/practice/Practice.vue'
 
 const routes = [
   {
     path: "/",
-    component: User,
+    component: CustomersData,
+  },
+  {
+    path: "/card-game",
+    component: CardGame,
   },
   {
     path: "/practice",
     component: Practice,
-  },
-  {
-    path: "/game",
-    component: Game,
-  },
+  }
 ];
 
 const router = createRouter({

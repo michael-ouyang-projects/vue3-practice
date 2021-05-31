@@ -26,26 +26,41 @@
       <th>Email</th>
       <th></th>
     </tr>
-    <tr v-for="user in users" :key="user" v-show="user.show === true">
+    <tr v-for="user in users" :key="user" v-show="user.show">
       <td><button @click="getUserTodoList(user.id)">{{ user.id }}</button></td>
-      <td>{{ user.name }}</td>
-      <td>{{ user.phone }}</td>
-      <td>{{ user.email }}</td>
-      <td><button>edit</button></td>
+      <td>
+        <div v-show="!user.edit">{{ user.name }}</div>
+        <div v-show="user.edit"><input v-model="user.name" /></div>
+      </td>
+      <td>
+        <div v-show="!user.edit">{{ user.phone }}</div>
+        <div v-show="user.edit"><input v-model="user.phone" /></div>
+      </td>
+      <td>
+        <div v-show="!user.edit">{{ user.email }}</div>
+        <div v-show="user.edit"><input v-model="user.email" /></div>
+      </td>
+      <td>
+        <div v-show="!user.edit"><button @click="editUser(user)">edit</button></div>
+        <div v-show="user.edit">
+          <button @click="confirmUpdate(user)">confirm</button>&nbsp;
+          <button @click="deleteUser(user.id)">delete</button>
+        </div>
+      </td>
     </tr>
   </table><br/>
 
-  <TodoTable v-if="showTodoTable" :todoList='userTodoList' @closeTodoTable="closeTodoTable()"/>
+  <AccountsData v-if="showTodoTable" :todoList='userTodoList' @closeTodoTable="closeTodoTable()"/>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
-import TodoTable from './TodoTable.vue'
-import userService from '@/api/user-service.js'
+import AccountsData from './AccountsData.vue'
+import userService from '@/api/customer-service.js'
 
 export default {
   components: {
-    TodoTable
+    AccountsData
   },
   setup() {
     const showSortingRow = ref(true);
@@ -55,6 +70,7 @@ export default {
       users.value = await userService.getUsers();
       users.value.forEach(user => {
         user.show = true;
+        user.edit = false;
       });
       showUserTable.value = true;
     });
@@ -76,6 +92,23 @@ export default {
       });
       showSortingRow.value = false;
       showTodoTable.value = true;
+    };
+
+    const editUser = user => {
+      user.edit = true;
+    };
+    const confirmUpdate = user => {
+      user.edit = false;
+    };
+    const deleteUser = userId => {
+      let confirmation = confirm('Please confirm to delete user ' + userId + ' ?');
+      if (confirmation) {
+        users.value.forEach((user, index) => {
+          if(userId === user.id) {
+            users.value.splice(index, 1);
+          }
+        });
+      }
     };
 
     const sortIdAscending  = () => {
@@ -130,6 +163,9 @@ export default {
       showTodoTable,
       closeTodoTable,
       getUserTodoList,
+      editUser,
+      confirmUpdate,
+      deleteUser,
       sortIdAscending,
       sortIdDescending,
       sortNameAscending,
