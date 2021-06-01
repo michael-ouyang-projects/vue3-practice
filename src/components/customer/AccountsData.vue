@@ -1,5 +1,5 @@
 <template>
-  <button @click="closeTodoTable()">Close</button><br/><br/>
+  <button @click="close()">Close</button><br/><br/>
   <table>
     <tr>
       <th>Todo ID</th>
@@ -7,28 +7,65 @@
       <th>Completed</th>
       <th></th>
     </tr>
-    <tr v-for="todo in todoList" :key="todo">
-      <td>{{ todo.id }}</td>
-      <td>{{ todo.title }}</td>
-      <td>{{ todo.completed }}</td>
-      <td><button>edit</button></td>
+    <tr v-for="account in accounts" :key="account">
+      <td>
+        <div v-show="!account.edit">{{ account.id }}</div>
+        <div v-show="account.edit"><input v-model="account.id" /></div>
+      </td>
+      <td>
+        <div v-show="!account.edit">{{ account.title }}</div>
+        <div v-show="account.edit"><input v-model="account.title" /></div>
+      </td>
+      <td>
+        <div v-show="!account.edit">{{ account.completed }}</div>
+        <div v-show="account.edit"><input v-model="account.completed" /></div>
+      </td>
+      <td>
+        <div v-show="!account.edit"><button @click="editAccount(account)">edit</button></div>
+        <div v-show="account.edit">
+          <button @click="confirmAccountUpdate(account)">confirm</button>&nbsp;
+          <button @click="deleteAccount(account.id)">delete</button>
+        </div>
+      </td>
     </tr>
   </table><br/>
 </template>
 
 <script>
+import { toRefs } from 'vue'
+
 export default {
   props: {
-    todoList: {}
+    accounts: {}
   },
-  emits: ['closeTodoTable'],
+  emits: ['close'],
   setup(props, { emit }) {
-    const closeTodoTable = () => {
-      emit('closeTodoTable');
+    const close = () => {
+      emit('close');
+    };
+    const editAccount = account => {
+      account.edit = true;
+    };
+    const confirmAccountUpdate = account => {
+      account.edit = false;
+    };
+    const { accounts } = toRefs(props);
+    const deleteAccount = accountId => {
+      let confirmation = confirm('Please confirm to delete account ' + accountId + ' ?');
+      if (confirmation) {
+          accounts.value.forEach((account, index) => {
+          if(accountId === account.id) {
+            accounts.value.splice(index, 1);
+          }
+        });
+      }
     };
 
     return {
-      closeTodoTable
+      close,
+      editAccount,
+      confirmAccountUpdate,
+      deleteAccount
     }
   }
 }

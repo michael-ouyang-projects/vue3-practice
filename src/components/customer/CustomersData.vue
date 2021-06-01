@@ -1,179 +1,131 @@
 <template>
-  <table v-show="showUserTable">
-    <tr v-show="showSortingRow">
+  <table v-show="isShowingCustomersData">
+    <tr v-show="isShowingCustomersSortingRow">
       <th>
-        <button @click="sortIdAscending()">Asc</button>&nbsp;
-        <button @click="sortIdDescending()">Desc</button>
+        <button @click="sortingCustomersUtil.sortCustomerIdAsc(customers)">Asc</button>&nbsp;
+        <button @click="sortingCustomersUtil.sortCustomerIdDesc(customers)">Desc</button>
       </th>
       <th>
-        <button @click="sortNameAscending()">Asc</button>&nbsp;
-        <button @click="sortNameDescending()">Desc</button>
+        <button @click="sortingCustomersUtil.sortCustomerNameAsc(customers)">Asc</button>&nbsp;
+        <button @click="sortingCustomersUtil.sortCustomerNameDesc(customers)">Desc</button>
       </th>
       <th>
-        <button @click="sortPhoneAscending()">Asc</button>&nbsp;
-        <button @click="sortPhoneDescending()">Desc</button>
+        <button @click="sortingCustomersUtil.sortCustomerPhoneAsc(customers)">Asc</button>&nbsp;
+        <button @click="sortingCustomersUtil.sortCustomerPhoneDesc(customers)">Desc</button>
       </th>
       <th>
-        <button @click="sortEmailAscending()">Asc</button>&nbsp;
-        <button @click="sortEmailDescending()">Desc</button>
+        <button @click="sortingCustomersUtil.sortCustomerEmailAsc(customers)">Asc</button>&nbsp;
+        <button @click="sortingCustomersUtil.sortCustomerEmailDesc(customers)">Desc</button>
       </th>
       <th></th>
     </tr>
     <tr>
-      <th>User ID</th>
+      <th>customer ID</th>
       <th>Name</th>
       <th>Phone</th>
       <th>Email</th>
       <th></th>
     </tr>
-    <tr v-for="user in users" :key="user" v-show="user.show">
-      <td><button @click="getUserTodoList(user.id)">{{ user.id }}</button></td>
+    <tr v-for="customer in customers" :key="customer" v-show="customer.show">
+      <td><button @click="getCustomerAccounts(customer.id)">{{ customer.id }}</button></td>
       <td>
-        <div v-show="!user.edit">{{ user.name }}</div>
-        <div v-show="user.edit"><input v-model="user.name" /></div>
+        <div v-show="!customer.edit">{{ customer.name }}</div>
+        <div v-show="customer.edit"><input v-model="customer.name" /></div>
       </td>
       <td>
-        <div v-show="!user.edit">{{ user.phone }}</div>
-        <div v-show="user.edit"><input v-model="user.phone" /></div>
+        <div v-show="!customer.edit">{{ customer.phone }}</div>
+        <div v-show="customer.edit"><input v-model="customer.phone" /></div>
       </td>
       <td>
-        <div v-show="!user.edit">{{ user.email }}</div>
-        <div v-show="user.edit"><input v-model="user.email" /></div>
+        <div v-show="!customer.edit">{{ customer.email }}</div>
+        <div v-show="customer.edit"><input v-model="customer.email" /></div>
       </td>
       <td>
-        <div v-show="!user.edit"><button @click="editUser(user)">edit</button></div>
-        <div v-show="user.edit">
-          <button @click="confirmUpdate(user)">confirm</button>&nbsp;
-          <button @click="deleteUser(user.id)">delete</button>
+        <div v-show="!customer.edit"><button @click="editCustomer(customer)">edit</button></div>
+        <div v-show="customer.edit">
+          <button @click="confirmCustomerUpdate(customer)">confirm</button>&nbsp;
+          <button @click="deleteCustomer(customer.id)">delete</button>
         </div>
       </td>
     </tr>
   </table><br/>
 
-  <AccountsData v-if="showTodoTable" :todoList='userTodoList' @closeTodoTable="closeTodoTable()"/>
+  <AccountsData v-if="isShowingCustomerAccountsData" :accounts='customerAccounts' @close="closeCustomerAccountsData()"/>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
+import customerService from '@/api/customer/customer-service.js'
+import sortingCustomersUtil from '@/utils/customer/sorting-customers-util.js'
 import AccountsData from './AccountsData.vue'
-import userService from '@/api/customer-service.js'
 
 export default {
   components: {
     AccountsData
   },
   setup() {
-    const showSortingRow = ref(true);
-    const users = ref(null);
-    const showUserTable = ref(false);
+    const customers = ref(null);
+    const isShowingCustomersData = ref(false);
+    const isShowingCustomersSortingRow = ref(true);
     onMounted(async () => {
-      users.value = await userService.getUsers();
-      users.value.forEach(user => {
-        user.show = true;
-        user.edit = false;
+      customers.value = await customerService.getCustomers();
+      customers.value.forEach(customer => {
+        customer.show = true;
+        customer.edit = false;
       });
-      showUserTable.value = true;
+      isShowingCustomersData.value = true;
     });
-
-    const userTodoList = ref(null);
-    const showTodoTable = ref(false);
-    const closeTodoTable = () => {
-      users.value.forEach(user => {
-        user.show = true;
-      });
-      showSortingRow.value = true;
-      showTodoTable.value = false;
+    const editCustomer = customer => {
+      customer.edit = true;
     };
-    const getUserTodoList = async userId => {
-      userTodoList.value = await userService.getUserTodoList(userId);
-      users.value.forEach(user => {
-        if(userId !== user.id)
-        user.show = false;
-      });
-      showSortingRow.value = false;
-      showTodoTable.value = true;
+    const confirmCustomerUpdate = customer => {
+      customer.edit = false;
     };
-
-    const editUser = user => {
-      user.edit = true;
-    };
-    const confirmUpdate = user => {
-      user.edit = false;
-    };
-    const deleteUser = userId => {
-      let confirmation = confirm('Please confirm to delete user ' + userId + ' ?');
+    const deleteCustomer = customerId => {
+      let confirmation = confirm('Please confirm to delete customer ' + customerId + ' ?');
       if (confirmation) {
-        users.value.forEach((user, index) => {
-          if(userId === user.id) {
-            users.value.splice(index, 1);
+        customers.value.forEach((customer, index) => {
+          if(customerId === customer.id) {
+            customers.value.splice(index, 1);
           }
         });
       }
     };
 
-    const sortIdAscending  = () => {
-      users.value.sort((a, b) => {
-        return a.id - b.id;
+    const customerAccounts = ref(null);
+    const isShowingCustomerAccountsData = ref(false);
+    const getCustomerAccounts = async customerId => {
+      customerAccounts.value = await customerService.getCustomerAccounts(customerId);
+      customerAccounts.value.forEach(account => {
+        account.edit = false;
       });
+      customers.value.forEach(customer => {
+        if(customer.id !== customerId)
+        customer.show = false;
+      });
+      isShowingCustomerAccountsData.value = true;
+      isShowingCustomersSortingRow.value = false;
     };
-    const sortIdDescending  = () => {
-      users.value.sort((a, b) => {
-        return b.id - a.id;
+    const closeCustomerAccountsData = () => {
+      customers.value.forEach(customer => {
+        customer.show = true;
       });
-    };
-
-    const sortNameAscending = () => {
-      users.value.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
-    };
-    const sortNameDescending = () => {
-      users.value.sort((a, b) => {
-        return b.name.localeCompare(a.name);
-      });
-    };
-
-    const sortPhoneAscending = () => {
-      users.value.sort((a, b) => {
-        return a.phone.localeCompare(b.phone);
-      });
-    };
-    const sortPhoneDescending = () => {
-      users.value.sort((a, b) => {
-        return b.phone.localeCompare(a.phone);
-      });
-    };
-
-    const sortEmailAscending = () => {
-      users.value.sort((a, b) => {
-        return a.email.localeCompare(b.email);
-      });
-    };
-    const sortEmailDescending = () => {
-      users.value.sort((a, b) => {
-        return b.email.localeCompare(a.email);
-      });
+      isShowingCustomerAccountsData.value = false;
+      isShowingCustomersSortingRow.value = true;
     };
 
     return {
-      showSortingRow,
-      users,
-      showUserTable,
-      userTodoList,
-      showTodoTable,
-      closeTodoTable,
-      getUserTodoList,
-      editUser,
-      confirmUpdate,
-      deleteUser,
-      sortIdAscending,
-      sortIdDescending,
-      sortNameAscending,
-      sortNameDescending,
-      sortPhoneAscending,
-      sortPhoneDescending,
-      sortEmailAscending,
-      sortEmailDescending
+      customers,
+      isShowingCustomersData,
+      isShowingCustomersSortingRow,
+      sortingCustomersUtil,
+      editCustomer,
+      confirmCustomerUpdate,
+      deleteCustomer,
+      customerAccounts,
+      isShowingCustomerAccountsData,
+      getCustomerAccounts,
+      closeCustomerAccountsData
     }
   }
 }
