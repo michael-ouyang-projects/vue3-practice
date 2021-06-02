@@ -21,25 +21,36 @@ export default {
     });
   },
 
-  sortCustomerPhoneAsc: customers => {
+  sortCustomerSexAsc: customers => {
     customers.sort((a, b) => {
-      return a.phone.localeCompare(b.phone);
+      return a.sex.localeCompare(b.sex);
     });
   },
-  sortCustomerPhoneDesc: customers => {
+  sortCustomerSexDesc: customers => {
     customers.sort((a, b) => {
-      return b.phone.localeCompare(a.phone);
+      return b.sex.localeCompare(a.sex);
     });
   },
 
-  sortCustomerEmailAsc: customers => {
+  sortCustomerAgeAsc: customers => {
     customers.sort((a, b) => {
-      return a.email.localeCompare(b.email);
+      return a.age - b.age;
     });
   },
-  sortCustomerEmailDesc: customers => {
+  sortCustomerAgeDesc: customers => {
     customers.sort((a, b) => {
-      return b.email.localeCompare(a.email);
+      return b.age - a.age;
+    });
+  },
+
+  sortCustomerBalanceAsc: customers => {
+    customers.sort((a, b) => {
+      return a.balance - b.balance;
+    });
+  },
+  sortCustomerBalanceDesc: customers => {
+    customers.sort((a, b) => {
+      return b.balance - a.balance;
     });
   }
 }
