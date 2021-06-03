@@ -12,7 +12,7 @@
       <option value="20">20</option>
       <option value="50">50</option>
     </select>&nbsp;&nbsp;&nbsp;
-    <button @click="runSelect()">Run</button>
+    <button @click="runSearch()">Run</button>
   </div><br/>
 
   <table v-show="isShowingCustomersData">
@@ -118,13 +118,18 @@ export default {
   },
   setup() {
     const previousPage = async () => {
-      alert('previousPage');
+      if(condition.value.step > 0) {
+        condition.value.step--;
+        customers.value = await customerService.getCustomers(condition);
+      }
     };
     const nextPage = async () => {
-      alert('nextPage');
+      condition.value.step++;
+      customers.value = await customerService.getCustomers(condition);
     };
-    const condition = ref({ rows: "10" });
-    const runSelect = async () => {
+    const condition = ref({ rows: "10", step: 0 });
+    const runSearch = async () => {
+      condition.value.step = 0;
       customers.value = await customerService.getCustomers(condition);
     };
 
@@ -162,9 +167,9 @@ export default {
     const deleteCustomer = customer => {
       let confirmation = confirm('Please confirm to delete customer ' + customer.customerId + ' ?');
       if (confirmation) {
-        customers.value.forEach((loopCustomer, index) => {
+        customers.value.forEach((loopCustomer, step) => {
           if(customer.customerId === loopCustomer.customerId) {
-            customers.value.splice(index, 1);
+            customers.value.splice(step, 1);
           }
         });
         customerService.deleteCustomer(customer.id);
@@ -197,7 +202,7 @@ export default {
       previousPage,
       nextPage,
       condition,
-      runSelect,
+      runSearch,
       customers,
       customerForAdding,
       isShowingCustomersData,
