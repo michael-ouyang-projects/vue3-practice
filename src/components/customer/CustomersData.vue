@@ -1,4 +1,20 @@
 <template>
+  <!-- Condition -->
+  <div>
+    <button @click="previousPage()">Previous Page</button>&nbsp; | &nbsp;
+    <button @click="nextPage()">Next Page</button>&nbsp;&nbsp;&nbsp;
+    Condition: <input v-model="condition.where" />&nbsp;&nbsp;&nbsp;
+    Sort: <input v-model="condition.sort" />&nbsp;&nbsp;&nbsp;
+    Rows:
+    <select v-model="condition.rows">
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+    </select>&nbsp;&nbsp;&nbsp;
+    <button @click="runSelect()">Run</button>
+  </div><br/>
+
   <table v-show="isShowingCustomersData">
     <!-- SortingRow -->
     <tr v-show="isShowingCustomersSortingRow">
@@ -22,17 +38,17 @@
         <button @click="sortingCustomersUtil.sortCustomerBalanceAsc(customers)">Asc</button>&nbsp;
         <button @click="sortingCustomersUtil.sortCustomerBalanceDesc(customers)">Desc</button>
       </th>
-      <th></th>
+      <td>{{ customers.length }}</td>
     </tr>
 
     <!-- Header -->
     <tr>
-      <th>Customer ID</th>
-      <th>Name</th>
-      <th>Sex</th>
-      <th>Age</th>
-      <th>Balance</th>
-      <th><button v-show="!isAddingCustomer" @click="addCustomer()">Add</button></th>
+      <th>customer_id</th>
+      <th>name</th>
+      <th>sex</th>
+      <th>age</th>
+      <th>balance</th>
+      <th><button v-show="!isAddingCustomer" @click="showCustomerAddingRow()">Add</button></th>
     </tr>
 
     <!-- AddingRow -->
@@ -47,7 +63,10 @@
       </td>
       <td><input v-model="customerForAdding.age" /></td>
       <td><input v-model="customerForAdding.balance" /></td>
-      <td><button @click="addCustomer()">Add</button></td>
+      <td>
+        <button @click="addCustomer()">Confirm</button>&nbsp;
+        <button @click="cancelAddCustomer()">Cancel</button>
+      </td>
     </tr>
 
     <!-- Data -->
@@ -75,10 +94,10 @@
         <div v-show="customer.edit"><input v-model="customer.balance" /></div>
       </td>
       <td>
-        <div v-show="!customer.edit"><button @click="editCustomer(customer)">edit</button></div>
+        <div v-show="!customer.edit"><button @click="editCustomer(customer)">Edit</button></div>
         <div v-show="customer.edit">
-          <button @click="confirmCustomerUpdate(customer)">confirm</button>&nbsp;
-          <button @click="deleteCustomer(customer)">delete</button>
+          <button @click="confirmCustomerUpdate(customer)">Confirm</button>&nbsp;
+          <button @click="deleteCustomer(customer)">Delete</button>
         </div>
       </td>
     </tr>
@@ -98,22 +117,39 @@ export default {
     AccountsData
   },
   setup() {
-    const customers = ref(null);
+    const previousPage = async () => {
+      alert('previousPage');
+    };
+    const nextPage = async () => {
+      alert('nextPage');
+    };
+    const condition = ref({ rows: "10" });
+    const runSelect = async () => {
+      customers.value = await customerService.getCustomers(condition);
+    };
+
+    const customers = ref({});
     const customerForAdding = ref({});
     const isShowingCustomersData = ref(false);
     const isShowingCustomersSortingRow = ref(true);
     const isAddingCustomer = ref(false);
     onMounted(async () => {
-      customers.value = await customerService.getCustomers();
-      customers.value.forEach(customer => {
-        customer.show = true;
-        customer.edit = false;
-        customer.balanceString = customer.balance.toLocaleString();
-      });
+      customers.value = await customerService.getCustomers(condition);
       isShowingCustomersData.value = true;
     });
-    const addCustomer = () => {
+    const showCustomerAddingRow = () => {
       isAddingCustomer.value = true;
+    };
+    const addCustomer = async () => {
+      await customerService.addCustomer(customerForAdding.value);
+      customerForAdding.value = {};
+      isAddingCustomer.value = false;
+      condition.value.sort = "customer_id desc";
+      customers.value = await customerService.getCustomers(condition);
+      sortingCustomersUtil.sortCustomerIdDesc(customers.value);
+    };
+    const cancelAddCustomer = () => {
+      isAddingCustomer.value = false;
     };
     const editCustomer = customer => {
       customer.edit = true;
@@ -158,13 +194,19 @@ export default {
     };
 
     return {
+      previousPage,
+      nextPage,
+      condition,
+      runSelect,
       customers,
       customerForAdding,
       isShowingCustomersData,
       isShowingCustomersSortingRow,
       isAddingCustomer,
       sortingCustomersUtil,
+      showCustomerAddingRow,
       addCustomer,
+      cancelAddCustomer,
       editCustomer,
       confirmCustomerUpdate,
       deleteCustomer,

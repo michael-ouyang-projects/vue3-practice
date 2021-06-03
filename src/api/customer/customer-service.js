@@ -1,10 +1,20 @@
 import axios from 'axios'
 
 export default {
-  getCustomers: async () => {
-    let url = 'http://localhost:8000/customer/';
-    let response = await axios.get(url);
+  getCustomers: async condition => {
+    let url = 'http://localhost:8000/customers/';
+    let response = await axios.post(url, condition.value);
+    response.data.forEach(customer => {
+      customer.show = true;
+      customer.edit = false;
+      customer.balanceString = customer.balance.toLocaleString();
+    });
     return response.data;
+  },
+
+  addCustomer: async customer => {
+    let url = 'http://localhost:8000/customer/';
+    await axios.post(url, customer);
   },
 
   updateCustomer: async customer => {
