@@ -1,12 +1,20 @@
 export default {
   sortCustomerIdAsc: customers => {
     customers.sort((a, b) => {
-      return a.id - b.id;
+      if(a.customerId[0] === b.customerId[0]) {
+        return b.customerId.substring(1).localeCompare(a.customerId.substring(1));
+      } else {
+        return a.customerId[0].localeCompare(b.customerId[0]);
+      }
     });
   },
   sortCustomerIdDesc: customers => {
     customers.sort((a, b) => {
-      return b.id - a.id;
+      if(a.customerId[0] === b.customerId[0]) {
+        return a.customerId.substring(1).localeCompare(b.customerId.substring(1));
+      } else {
+        return b.customerId[0].localeCompare(a.customerId[0]);
+      }
     });
   },
 

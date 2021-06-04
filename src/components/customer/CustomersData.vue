@@ -149,9 +149,8 @@ export default {
       await customerService.addCustomer(customerForAdding.value);
       customerForAdding.value = {};
       isAddingCustomer.value = false;
-      condition.value.sort = "customer_id desc";
+      condition.value.sort = "id desc";
       customers.value = await customerService.getCustomers(condition);
-      sortingCustomersUtil.sortCustomerIdDesc(customers.value);
     };
     const cancelAddCustomer = () => {
       isAddingCustomer.value = false;
