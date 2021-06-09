@@ -1,13 +1,12 @@
 import axios from 'axios'
+import customerDataUtil from '@/utils/customer/customer-data-util.js'
 
 export default {
   getCustomers: async condition => {
     let url = 'http://localhost:8000/customers/';
     let response = await axios.post(url, condition.value);
     response.data.forEach(customer => {
-      customer.show = true;
-      customer.edit = false;
-      customer.balanceString = customer.balance.toLocaleString();
+      customerDataUtil.initializeCustomer(customer);
     });
     return response.data;
   },
@@ -32,10 +31,4 @@ export default {
     let response = await axios.get(url);
     return response.data;
   }
-
-  // getCustomers: async () => {
-  //   let url = 'https://jsonplaceholder.typicode.com/users/';
-  //   let response = await axios.get(url);
-  //   return response.data;
-  // },
 }

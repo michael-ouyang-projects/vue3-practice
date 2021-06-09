@@ -6,7 +6,7 @@
     Condition: <input v-model="condition.where" />&nbsp;&nbsp;&nbsp;
     Sort: <input v-model="condition.sort" />&nbsp;&nbsp;&nbsp;
     Rows:
-    <select v-model="condition.rows">
+    <select v-model="condition.rows" @change="runSearch()">
       <option value="5">5</option>
       <option value="10">10</option>
       <option value="20">20</option>
@@ -19,24 +19,26 @@
     <!-- SortingRow -->
     <tr v-show="isShowingCustomersSortingRow">
       <th>
-        <button @click="sortingCustomersUtil.sortCustomerIdAsc(customers)">Asc</button>&nbsp;
-        <button @click="sortingCustomersUtil.sortCustomerIdDesc(customers)">Desc</button>
+        <button @click="customerSortingUtil.sortCustomerIdAsc(customers)">Asc</button>&nbsp;
+        <button @click="customerSortingUtil.sortCustomerIdDesc(customers)">Desc</button>
       </th>
       <th>
-        <button @click="sortingCustomersUtil.sortCustomerNameAsc(customers)">Asc</button>&nbsp;
-        <button @click="sortingCustomersUtil.sortCustomerNameDesc(customers)">Desc</button>
+        <button @click="customerSortingUtil.sortCustomerNameAsc(customers)">Asc</button>&nbsp;
+        <button @click="customerSortingUtil.sortCustomerNameDesc(customers)">Desc</button>
+      </th>
+      <th style="width: 135px">Demo px</th>
+      <!-- <th style="width: 8.5em">Demo em</th> -->
+      <th>
+        <button @click="customerSortingUtil.sortCustomerSexAsc(customers)">Asc</button>&nbsp;
+        <button @click="customerSortingUtil.sortCustomerSexDesc(customers)">Desc</button>
       </th>
       <th>
-        <button @click="sortingCustomersUtil.sortCustomerSexAsc(customers)">Asc</button>&nbsp;
-        <button @click="sortingCustomersUtil.sortCustomerSexDesc(customers)">Desc</button>
+        <button @click="customerSortingUtil.sortCustomerAgeAsc(customers)">Asc</button>&nbsp;
+        <button @click="customerSortingUtil.sortCustomerAgeDesc(customers)">Desc</button>
       </th>
       <th>
-        <button @click="sortingCustomersUtil.sortCustomerAgeAsc(customers)">Asc</button>&nbsp;
-        <button @click="sortingCustomersUtil.sortCustomerAgeDesc(customers)">Desc</button>
-      </th>
-      <th>
-        <button @click="sortingCustomersUtil.sortCustomerBalanceAsc(customers)">Asc</button>&nbsp;
-        <button @click="sortingCustomersUtil.sortCustomerBalanceDesc(customers)">Desc</button>
+        <button @click="customerSortingUtil.sortCustomerBalanceAsc(customers)">Asc</button>&nbsp;
+        <button @click="customerSortingUtil.sortCustomerBalanceDesc(customers)">Desc</button>
       </th>
       <td>{{ customers.length }}</td>
     </tr>
@@ -45,6 +47,7 @@
     <tr>
       <th>customer_id</th>
       <th>name</th>
+      <th>name2</th>
       <th>sex</th>
       <th>age</th>
       <th>balance</th>
@@ -55,6 +58,7 @@
     <tr v-show="isAddingCustomer">
       <td>Automatic Generated</td>
       <td><input v-model="customerForAdding.name" /></td>
+      <td></td>
       <td>
         <input type="radio" id="male" value="male" v-model="customerForAdding.sex" />
         <label for="male">Male</label>
@@ -73,8 +77,13 @@
     <tr v-for="customer in customers" :key="customer" v-show="customer.show">
       <td><button @click="getCustomerAccounts(customer.customerId)">{{ customer.customerId }}</button></td>
       <td>
-        <div v-show="!customer.edit">{{ customer.name }}</div>
+        <div v-show="!customer.edit">
+          <span v-html="customer.nameString"></span>
+        </div>
         <div v-show="customer.edit"><input v-model="customer.name" /></div>
+      </td>
+      <td>
+        <div v-show="!customer.edit" style="word-break: break-word;">{{ customer.name }}</div>
       </td>
       <td>
         <div v-show="!customer.edit">{{ customer.sex }}</div>
@@ -109,7 +118,8 @@
 <script>
 import { ref, onMounted } from 'vue'
 import customerService from '@/api/customer/customer-service.js'
-import sortingCustomersUtil from '@/utils/customer/sorting-customers-util.js'
+import customerSortingUtil from '@/utils/customer/customer-sorting-util.js'
+import customerDataUtil from '@/utils/customer/customer-data-util.js'
 import AccountsData from './AccountsData.vue'
 
 export default {
@@ -117,6 +127,7 @@ export default {
     AccountsData
   },
   setup() {
+    const condition = ref({ rows: "10", step: 0 });
     const previousPage = async () => {
       if(condition.value.step > 0) {
         condition.value.step--;
@@ -127,7 +138,6 @@ export default {
       condition.value.step++;
       customers.value = await customerService.getCustomers(condition);
     };
-    const condition = ref({ rows: "10", step: 0 });
     const runSearch = async () => {
       condition.value.step = 0;
       customers.value = await customerService.getCustomers(condition);
@@ -148,19 +158,18 @@ export default {
     const addCustomer = async () => {
       await customerService.addCustomer(customerForAdding.value);
       customerForAdding.value = {};
-      isAddingCustomer.value = false;
       condition.value.sort = "id desc";
       customers.value = await customerService.getCustomers(condition);
     };
     const cancelAddCustomer = () => {
+      customerForAdding.value = {};
       isAddingCustomer.value = false;
     };
     const editCustomer = customer => {
       customer.edit = true;
     };
     const confirmCustomerUpdate = customer => {
-      customer.balanceString = Number(customer.balance).toLocaleString();
-      customer.edit = false;
+      customerDataUtil.initializeCustomer(customer);
       customerService.updateCustomer(customer);
     };
     const deleteCustomer = customer => {
@@ -207,7 +216,7 @@ export default {
       isShowingCustomersData,
       isShowingCustomersSortingRow,
       isAddingCustomer,
-      sortingCustomersUtil,
+      customerSortingUtil,
       showCustomerAddingRow,
       addCustomer,
       cancelAddCustomer,
