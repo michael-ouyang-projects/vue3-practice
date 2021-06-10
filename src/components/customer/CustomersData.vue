@@ -26,8 +26,7 @@
         <button @click="customerSortingUtil.sortCustomerNameAsc(customers)">Asc</button>&nbsp;
         <button @click="customerSortingUtil.sortCustomerNameDesc(customers)">Desc</button>
       </th>
-      <th style="width: 135px">Demo px</th>
-      <!-- <th style="width: 8.5em">Demo em</th> -->
+      <th>Demo px</th>
       <th>
         <button @click="customerSortingUtil.sortCustomerSexAsc(customers)">Asc</button>&nbsp;
         <button @click="customerSortingUtil.sortCustomerSexDesc(customers)">Desc</button>
@@ -47,7 +46,8 @@
     <tr>
       <th>customer_id</th>
       <th>name</th>
-      <th>name2</th>
+      <th style="width: 135px">name2</th>
+      <!-- <th style="width: 8.5em">name2</th> -->
       <th>sex</th>
       <th>age</th>
       <th>balance</th>
@@ -121,6 +121,7 @@ import customerService from '@/api/customer/customer-service.js'
 import customerSortingUtil from '@/utils/customer/customer-sorting-util.js'
 import customerDataUtil from '@/utils/customer/customer-data-util.js'
 import AccountsData from './AccountsData.vue'
+import accountService from '@/api/account/account-service.js'
 
 export default {
   components: {
@@ -187,7 +188,7 @@ export default {
     const customerAccounts = ref(null);
     const isShowingCustomerAccountsData = ref(false);
     const getCustomerAccounts = async customerId => {
-      customerAccounts.value = await customerService.getCustomerAccounts(customerId);
+      customerAccounts.value = await accountService.getAccountsByCustomerId(customerId);
       customerAccounts.value.forEach(account => {
         account.edit = false;
       });
