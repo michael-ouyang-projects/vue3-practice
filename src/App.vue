@@ -1,6 +1,7 @@
 <template>
   <div>
     <router-link to="/">Customer</router-link> &nbsp;|&nbsp;
+    <router-link to="/table">Table</router-link> &nbsp;|&nbsp;
     <router-link to="/card-game">Card Game</router-link> &nbsp;|&nbsp;
     <router-link to="/practice">Practice</router-link>
   </div><hr/><br/>

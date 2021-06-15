@@ -20,7 +20,7 @@
     {{ name.text }}
   </div><br/><br/>
 
-  <!-- calling api -->  
+  <!-- calling api -->
   User : {{ user }}<br/><br/>
   <button @click="callApi">Call Api</button><br/><br/><br/>
 
@@ -45,7 +45,7 @@ export default {
     })
 
     // two-way binding
-    const title = ref('two-way binding') 
+    const title = ref('two-way binding')
 
     // events handling & reactive rendering on properties
     const message = ref('message')
@@ -57,7 +57,7 @@ export default {
         colorStyle.value = 'color:black';
       }
     }
-    
+
     // showing state
     const seen = ref(true)
     const toggleSeen = () => {

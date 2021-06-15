@@ -26,7 +26,7 @@
         <button @click="customerSortingUtil.sortCustomerNameAsc(customers)">Asc</button>&nbsp;
         <button @click="customerSortingUtil.sortCustomerNameDesc(customers)">Desc</button>
       </th>
-      <th>Demo px</th>
+      <th>Demo</th>
       <th>
         <button @click="customerSortingUtil.sortCustomerSexAsc(customers)">Asc</button>&nbsp;
         <button @click="customerSortingUtil.sortCustomerSexDesc(customers)">Desc</button>
@@ -46,8 +46,9 @@
     <tr>
       <th>customer_id</th>
       <th>name</th>
-      <th style="width: 135px">name2</th>
-      <!-- <th style="width: 8.5em">name2</th> -->
+      <!-- <th></th> -->
+      <th style="width: 135px">name (px)</th>
+      <!-- <th style="width: 8.5em">name (em)</th> -->
       <th>sex</th>
       <th>age</th>
       <th>balance</th>
